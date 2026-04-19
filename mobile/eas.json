@@ -1,0 +1,68 @@
+{
+  "cli": {
+    "version": ">= 5.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_API_URL": "http://localhost:3001"
+      },
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "channel": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "preview"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "preview"
+    },
+    "production": {
+      "distribution": "store",
+      "env": {
+        "APP_VARIANT": "production"
+      },
+      "ios": {
+        "autoIncrement": true,
+        "image": "latest"
+      },
+      "android": {
+        "buildType": "aab",
+        "autoIncrement": true,
+        "image": "latest"
+      },
+      "channel": "production"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "",
+        "appleId": "",
+        "appleTeamId": "",
+        "sku": "com.fisiomentor.app"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-services-key.json",
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    }
+  }
+}

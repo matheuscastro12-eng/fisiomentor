@@ -1,0 +1,26 @@
+{
+  "name": "Curador Clínico — FisioMentor",
+  "short_name": "FisioMentor",
+  "description": "Prescrição de exercício clínico com IA baseada em evidências",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#061423",
+  "theme_color": "#42dec3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "medical"],
+  "lang": "pt-BR"
+}

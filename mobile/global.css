@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-surface: #061423;
+    --color-surface-container: #0a1f33;
+    --color-surface-container-high: #0f2b45;
+    --color-primary: #42dec3;
+    --color-on-primary: #061423;
+    --color-on-surface: #e8eef4;
+    --color-on-surface-variant: #8b9db3;
+    --color-error: #ff6b6b;
+    --color-warning: #ffa726;
+    --color-success: #66bb6a;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-on-primary rounded-lg px-lg py-md font-semibold;
+  }
+
+  .btn-primary-outline {
+    @apply border border-primary text-primary rounded-lg px-lg py-md font-semibold;
+  }
+
+  .card {
+    @apply bg-surface-container rounded-lg p-lg;
+  }
+
+  .text-on-surface {
+    @apply text-on-surface;
+  }
+
+  .text-on-surface-variant {
+    @apply text-on-surface-variant;
+  }
+}

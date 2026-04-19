@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Clinical Curator: Base Layer ─── */
+@layer base {
+  * {
+    border-color: transparent;
+  }
+
+  html {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface text-on-surface;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-container-low;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-container-high rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-on-surface-variant;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+}
+
+/* ─── Clinical Curator: Component Layer ─── */
+@layer components {
+  /* Glass effect for floating elements */
+  .glass {
+    @apply bg-surface-variant backdrop-blur-[20px] shadow-glass;
+  }
+
+  /* Gradient CTA button */
+  .btn-primary-gradient {
+    @apply bg-gradient-primary text-primary-on font-display font-semibold
+           rounded-full px-6 py-3 transition-all duration-200
+           hover:shadow-ambient-md hover:scale-[1.02]
+           active:scale-[0.98];
+  }
+
+  /* Surface card (no borders — tonal shift only) */
+  .card-surface {
+    @apply bg-surface-container rounded-xl p-6
+           transition-colors duration-200
+           hover:bg-surface-container-high;
+  }
+
+  /* Medical badge variants */
+  .badge-red {
+    @apply bg-error-container/80 text-error text-label-sm
+           px-3 py-1 rounded-full font-body;
+  }
+  .badge-yellow {
+    @apply bg-warning-container/80 text-warning text-label-sm
+           px-3 py-1 rounded-full font-body;
+  }
+  .badge-green {
+    @apply bg-success-container/80 text-success text-label-sm
+           px-3 py-1 rounded-full font-body;
+  }
+  .badge-neutral {
+    @apply bg-secondary-container/80 text-secondary text-label-sm
+           px-3 py-1 rounded-full font-body;
+  }
+
+  /* Data table header (The "Scientist" View) */
+  .table-header {
+    @apply text-label-sm font-body uppercase tracking-[0.06em]
+           text-on-surface-variant;
+  }
+
+  /* Exercise data in monospace */
+  .exercise-data {
+    @apply font-mono text-primary font-medium;
+  }
+
+  /* Ghost border (accessibility fallback) */
+  .ghost-border {
+    @apply border border-outline-variant;
+  }
+
+  /* Section with tonal shift */
+  .section-elevated {
+    @apply bg-surface-container-low rounded-xl;
+  }
+}
+
+/* ─── Clinical Curator: Utility Layer ─── */
+@layer utilities {
+  .text-gradient-primary {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+
+  /* Safe area para dispositivos com notch */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* ─── Mobile-specific tweaks ─── */
+@media (max-width: 1023px) {
+  /* Exercício table: stack verticalmente no mobile */
+  .grid-cols-\[2fr_0\.8fr_0\.8fr_0\.8fr_1\.5fr\] {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+}
