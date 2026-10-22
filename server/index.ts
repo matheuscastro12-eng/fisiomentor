@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
-import Fastify from "fastify";
+import Fastify, { type FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import sensible from "@fastify/sensible";
@@ -10,11 +10,15 @@ import { studentRoutes } from "./routes/students";
 import { trainingPlanRoutes } from "./routes/training-plans";
 import { progressRoutes } from "./routes/progress";
 import { knowledgeRoutes } from "./routes/knowledge";
+import { getJwtSecret } from "./lib/jwt-secret";
 
 const PORT = Number(process.env.SERVER_PORT) || 3001;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000";
 
 async function buildServer() {
+  // Falha antes de qualquer coisa se o segredo do JWT não estiver configurado
+  const jwtSecret = getJwtSecret();
+
   const app = Fastify({
     logger: {
       level: "info",
@@ -33,14 +37,15 @@ async function buildServer() {
   });
 
   await app.register(jwt, {
-    // Use Supabase JWT secret for token verification
-    secret: process.env.SUPABASE_JWT_SECRET || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    // Use Supabase JWT secret for token verification (sem fallback)
+    secret: jwtSecret,
+    verify: { algorithms: ["HS256"] },
   });
 
   await app.register(sensible);
 
   // ─── Global error handler for Zod validation ───
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error: FastifyError, request, reply) => {
     if (error.name === "ZodError") {
       const zodError = error as any;
       return reply.status(400).send({
@@ -85,4 +90,7 @@ buildServer()
       app.log.info(`Server running on http://localhost:${PORT}`);
     });
   })
-  .catch(console.error);
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
