@@ -11,6 +11,26 @@ import {
 import { eq, and, sql, desc } from "drizzle-orm";
 import { authenticate } from "../middleware/auth";
 
+/**
+ * Verifica se o aluno pertence ao profissional autenticado.
+ * O Drizzle conecta direto no Postgres (sem RLS), então toda rota com
+ * :studentId precisa desta checagem antes de ler dados do aluno.
+ */
+async function isOwnedStudent(studentId: string, professionalId: string) {
+  const [student] = await db
+    .select({ id: students.id })
+    .from(students)
+    .where(
+      and(
+        eq(students.id, studentId),
+        eq(students.professionalId, professionalId)
+      )
+    )
+    .limit(1);
+
+  return Boolean(student);
+}
+
 const createSessionSchema = z.object({
   planId: z.string().uuid(),
   sessionDate: z.string().optional(),
@@ -84,10 +104,18 @@ export async function progressRoutes(app: FastifyInstance) {
   app.get(
     "/students/:studentId/sessions",
     { preHandler: [authenticate] },
-    async (request) => {
+    async (request, reply) => {
       const { studentId } = request.params as { studentId: string };
       const { limit: limitStr } = request.query as { limit?: string };
-      const limitNum = limitStr ? parseInt(limitStr) : 20;
+      const parsedLimit = limitStr ? parseInt(limitStr) : 20;
+      const limitNum =
+        Number.isFinite(parsedLimit) && parsedLimit > 0
+          ? Math.min(parsedLimit, 100)
+          : 20;
+
+      if (!(await isOwnedStudent(studentId, request.professionalId))) {
+        return reply.status(404).send({ error: "Aluno não encontrado." });
+      }
 
       const sessions = await db
         .select()
@@ -109,18 +137,7 @@ export async function progressRoutes(app: FastifyInstance) {
       const body = createProgressRecordSchema.parse(request.body);
 
       // Verificar ownership
-      const [student] = await db
-        .select({ id: students.id })
-        .from(students)
-        .where(
-          and(
-            eq(students.id, studentId),
-            eq(students.professionalId, request.professionalId)
-          )
-        )
-        .limit(1);
-
-      if (!student) {
+      if (!(await isOwnedStudent(studentId, request.professionalId))) {
         return reply.status(404).send({ error: "Aluno não encontrado." });
       }
 
@@ -143,9 +160,13 @@ export async function progressRoutes(app: FastifyInstance) {
   app.get(
     "/students/:studentId/progress",
     { preHandler: [authenticate] },
-    async (request) => {
+    async (request, reply) => {
       const { studentId } = request.params as { studentId: string };
       const { metric } = request.query as { metric?: string };
+
+      if (!(await isOwnedStudent(studentId, request.professionalId))) {
+        return reply.status(404).send({ error: "Aluno não encontrado." });
+      }
 
       const records = await db
         .select()
@@ -165,8 +186,12 @@ export async function progressRoutes(app: FastifyInstance) {
   app.get(
     "/students/:studentId/progress/summary",
     { preHandler: [authenticate] },
-    async (request) => {
+    async (request, reply) => {
       const { studentId } = request.params as { studentId: string };
+
+      if (!(await isOwnedStudent(studentId, request.professionalId))) {
+        return reply.status(404).send({ error: "Aluno não encontrado." });
+      }
 
       // Total de sessões realizadas
       const sessionCount = await db

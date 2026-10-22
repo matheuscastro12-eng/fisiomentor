@@ -279,7 +279,7 @@ export async function studentRoutes(app: FastifyInstance) {
         .update(students)
         .set({
           ...body,
-          ...(body.birthDate && { birthDate: new Date(body.birthDate) }),
+          birthDate: body.birthDate ? new Date(body.birthDate) : undefined,
         })
         .where(eq(students.id, id))
         .returning();
